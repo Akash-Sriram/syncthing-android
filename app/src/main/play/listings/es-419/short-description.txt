@@ -1,1 +1,0 @@
-Wrapper para Syncthing - Sincronización de archivos abierta y descentralizada
