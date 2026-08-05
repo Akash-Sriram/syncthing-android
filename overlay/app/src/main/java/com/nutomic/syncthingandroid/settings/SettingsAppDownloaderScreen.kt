@@ -426,7 +426,7 @@ fun ReleaseItemCard(
 }
 
 suspend fun fetchReleases(): List<Release> = withContext(Dispatchers.IO) {
-    val url = URL("https://api.github.com/repos/researchxxl/syncthing-android/releases")
+    val url = URL("https://api.github.com/repos/Akash-Sriram/syncthing-android/releases")
     val connection = url.openConnection() as HttpURLConnection
     connection.requestMethod = "GET"
     connection.setRequestProperty("User-Agent", "Syncthing-Android-Downloader")
