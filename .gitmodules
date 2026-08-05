@@ -1,3 +1,4 @@
 [submodule "syncthing-android-source"]
 	path = syncthing-android-source
 	url = https://github.com/researchxxl/syncthing-android.git
+	ignore = all
