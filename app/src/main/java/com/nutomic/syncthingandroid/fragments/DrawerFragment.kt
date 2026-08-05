@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.automirrored.outlined.ViewQuilt
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.ImportExport
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.Settings
@@ -221,6 +222,17 @@ private fun DrawerContent(
             Column(
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
+                DrawerItem(
+                    icon = { Icon(Icons.Outlined.Download, null) },
+                    label = { Text(stringResource(R.string.category_downloader)) },
+                    onClick = {
+                        val intent = Intent(activity, SettingsActivity::class.java).apply {
+                            putExtra(SettingsActivity.EXTRA_START_DESTINATION, "AppDownloader")
+                        }
+                        activity.startActivity(intent)
+                        activity.closeDrawer()
+                    },
+                )
                 DrawerItem(
                     icon = { Icon(Icons.Outlined.Settings, null) },
                     label = { Text(stringResource(R.string.settings_title)) },

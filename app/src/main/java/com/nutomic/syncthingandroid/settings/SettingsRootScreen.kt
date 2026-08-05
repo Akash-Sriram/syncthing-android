@@ -77,6 +77,13 @@ fun SettingsRootScreen() {
         }
         item {
             Preference(
+                title = { Text(stringResource(R.string.category_downloader)) },
+                summary = { Text(stringResource(R.string.downloader_summary)) },
+                onClick = { navigator.navigateTo(SettingsRoute.AppDownloader) },
+            )
+        }
+        item {
+            Preference(
                 title = { Text(stringResource(R.string.category_about)) },
                 onClick = { navigator.navigateTo(SettingsRoute.About) },
             )

@@ -49,6 +49,8 @@ sealed interface SettingsRoute : NavKey {
     data object About : SettingsRoute
     @Serializable
     data object Licenses : SettingsRoute
+    @Serializable
+    data object AppDownloader : SettingsRoute
 
 
     companion object {
@@ -66,6 +68,7 @@ sealed interface SettingsRoute : NavKey {
             "Experimental" -> Experimental
             "About" -> About
             "Licenses" -> Licenses
+            "AppDownloader" -> AppDownloader
             "Root" -> Root
             else -> {
                 Log.d(TAG, "Unknown settings path provided: $route. Defaulting to Root.")
@@ -121,6 +124,7 @@ fun SettingsNavDisplay(
             settingsExperimentalEntry()
             settingsAboutEntry()
             licensesEntry()
+            settingsAppDownloaderEntry()
         },
         transitionSpec = {
             // Slide in from right when navigating forward
