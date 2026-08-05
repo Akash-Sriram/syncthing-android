@@ -63,7 +63,7 @@ jobs:
           ls -la build-output/
 
       - name: Sign Android Release APK
-        uses: r0adksp/sign-android-release@v1
+        uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
           releaseDirectory: build-output
