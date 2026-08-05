@@ -74,10 +74,16 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
+      - name: Rename Signed APK
+        run: |
+          mv ${{ steps.sign_app.outputs.signedReleaseFile }} build-output/syncthing-fork-${{ github.ref_name }}-arm64-v8a.apk
+          # Delete any intermediate unsigned files to prevent uploading them
+          rm -f build-output/*unsigned*.apk
+
       - name: Create GitHub Release and Upload APKs
         uses: softprops/action-gh-release@v2
         with:
-          files: build-output/*.apk
+          files: build-output/syncthing-fork-*.apk
           draft: false
           prerelease: false
           generate_release_notes: true
