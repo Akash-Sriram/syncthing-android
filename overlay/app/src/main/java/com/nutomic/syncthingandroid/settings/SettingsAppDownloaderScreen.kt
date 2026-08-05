@@ -104,6 +104,15 @@ fun SettingsAppDownloaderScreen() {
     val navigator = LocalSettingsNavigator.current
     val scope = rememberCoroutineScope()
 
+    val currentVersion = remember(context) {
+        try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName ?: "0.0.0.0"
+        } catch (e: Exception) {
+            "0.0.0.0"
+        }
+    }
+
     var downloaderState by remember { mutableStateOf(DownloaderState.LOADING) }
     var releases by remember { mutableStateOf<List<Release>>(emptyList()) }
     var errorMessage by remember { mutableStateOf("") }
@@ -186,9 +195,32 @@ fun SettingsAppDownloaderScreen() {
                                 .padding(12.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            item {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                    )
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(Icons.Default.Info, contentDescription = "Info", tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Text(
+                                            text = "Installed Version: v$currentVersion",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                        )
+                                    }
+                                }
+                            }
                             items(releases) { release ->
                                 ReleaseItemCard(
                                     release = release,
+                                    currentVersion = currentVersion,
                                     onDownload = {
                                         val matchedAsset = getDeviceAbiApk(release.assets)
                                         if (matchedAsset != null) {
@@ -262,9 +294,14 @@ fun SettingsAppDownloaderScreen() {
 @Composable
 fun ReleaseItemCard(
     release: Release,
+    currentVersion: String,
     onDownload: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+
+    val isNewer = remember(release.tagName, currentVersion) {
+        isUpdateAvailable(currentVersion, release.tagName)
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -295,6 +332,22 @@ fun ReleaseItemCard(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (isNewer) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.primary)
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "New Update",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
                     if (release.prerelease) {
                         Box(
                             modifier = Modifier
@@ -470,4 +523,40 @@ suspend fun downloadAndInstallApk(
         }
         context.startActivity(intent)
     }
+}
+
+fun cleanVersion(version: String): String {
+    var clean = version.trim().lowercase()
+    if (clean.startsWith("v")) {
+        clean = clean.substring(1)
+    }
+    val dashIndex = clean.indexOf("-")
+    if (dashIndex != -1) {
+        clean = clean.substring(0, dashIndex)
+    }
+    val plusIndex = clean.indexOf("+")
+    if (plusIndex != -1) {
+        clean = clean.substring(0, plusIndex)
+    }
+    return clean.replace(Regex("[^0-9.]"), "")
+}
+
+fun isUpdateAvailable(currentVersion: String, releaseVersion: String): Boolean {
+    val currentClean = cleanVersion(currentVersion)
+    val releaseClean = cleanVersion(releaseVersion)
+
+    val currentParts = currentClean.split(".").mapNotNull { it.toIntOrNull() }
+    val releaseParts = releaseClean.split(".").mapNotNull { it.toIntOrNull() }
+
+    val maxLength = maxOf(currentParts.size, releaseParts.size)
+    for (i in 0 until maxLength) {
+        val currentPart = currentParts.getOrElse(i) { 0 }
+        val releasePart = releaseParts.getOrElse(i) { 0 }
+        if (releasePart > currentPart) {
+            return true
+        } else if (currentPart > releasePart) {
+            return false
+        }
+    }
+    return false
 }
