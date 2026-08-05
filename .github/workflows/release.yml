@@ -58,8 +58,8 @@ jobs:
       - name: Find and Package Built APKs
         run: |
           mkdir build-output
-          # Copy the built debug APKs into build-output directory
-          find syncthing-android-source/app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} build-output/ \;
+          # Copy only the arm64-v8a debug APK into build-output directory
+          find syncthing-android-source/app/build/outputs/apk/debug/ -name "*arm64-v8a*.apk" -exec cp {} build-output/ \;
           ls -la build-output/
 
       - name: Create GitHub Release and Upload APKs
