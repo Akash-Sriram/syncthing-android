@@ -86,6 +86,7 @@ jobs:
           files: build-output/syncthing-fork-*.apk
           draft: false
           prerelease: false
-          generate_release_notes: true
+          generate_release_notes: false
+          body: "Official Syncthing Android release with in-app downloader modifications."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
